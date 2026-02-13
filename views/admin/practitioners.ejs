@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Practitioners | MediBook</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    body {
+      background-color: #f4f6f9;
+    }
+
+    .page-title {
+      font-weight: 600;
+    }
+
+    .card-clean {
+      border-radius: 14px;
+      border: none;
+    }
+
+    .table td {
+      vertical-align: middle;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/admin">
+      MediBook Admin
+    </a>
+    <a href="/admin" class="btn btn-outline-light btn-sm">
+      Dashboard
+    </a>
+  </div>
+</nav>
+
+<div class="container py-5" style="max-width: 1100px;">
+
+  <div class="mb-4">
+    <h4 class="page-title mb-1">Manage Practitioners</h4>
+    <p class="text-muted mb-0">
+      Update assigned services or deactivate practitioner access.
+    </p>
+  </div>
+
+  <div class="card shadow-sm card-clean">
+    <div class="card-body">
+
+      <% if (practitioners.length === 0) { %>
+
+        <div class="alert alert-light text-center">
+          No practitioners found.
+        </div>
+
+      <% } else { %>
+
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th style="width: 250px;">Service</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <% practitioners.forEach(p => { %>
+
+                <tr>
+                  <td class="fw-semibold"><%= p.full_name %></td>
+                  <td><%= p.email %></td>
+
+                  <td>
+<form 
+  method="POST" 
+  action="/admin/practitioners/<%= p.id %>/update-service" 
+  class="d-flex flex-column flex-md-row gap-2 align-items-stretch"
+>
+
+                      <select name="service_id" class="form-select form-select-sm">
+
+                        <% services.forEach(s => { %>
+                          <option 
+                            value="<%= s.id %>"
+                            <%= s.id === p.service_id ? "selected" : "" %>
+                          >
+                            <%= s.name %>
+                          </option>
+                        <% }) %>
+
+                      </select>
+
+                      <button class="btn btn-sm btn-outline-primary">
+                        Update
+                      </button>
+
+                    </form>
+                  </td>
+
+<td class="text-end text-md-end text-start">
+                    <form 
+                      method="POST"
+                      action="/admin/practitioners/<%= p.id %>/deactivate"
+                      onsubmit="return confirm('Deactivate this practitioner?');"
+                    >
+<button class="btn btn-sm btn-warning w-100 w-md-auto">
+                        Deactivate
+                      </button>
+                    </form>
+                  </td>
+
+                </tr>
+
+              <% }) %>
+
+            </tbody>
+          </table>
+        </div>
+
+      <% } %>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

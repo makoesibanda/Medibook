@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Bookings | MediBook Admin</title>
+
+  <!-- REQUIRED for mobile responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+</head>
+
+<body class="bg-light">
+
+<!-- =========================
+NAVBAR
+========================= -->
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/admin">
+      MediBook Admin
+    </a>
+
+    <a href="/admin" class="btn btn-outline-light btn-sm">
+      Dashboard
+    </a>
+  </div>
+</nav>
+
+
+<div class="container py-5">
+
+  <!-- =========================
+  PAGE TITLE
+  Responsive header layout
+  ========================= -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <h3 class="fw-bold mb-2 mb-md-0">
+      All System Bookings
+    </h3>
+  </div>
+
+
+  <!-- =========================
+  IF NO BOOKINGS
+  ========================= -->
+  <% if (bookings.length === 0) { %>
+
+    <div class="alert alert-info">
+      No bookings found.
+    </div>
+
+  <% } else { %>
+
+    <!-- =========================
+    RESPONSIVE TABLE WRAPPER
+    Enables horizontal scroll on mobile
+    ========================= -->
+    <div class="table-responsive">
+
+      <!-- table-sm makes rows compact -->
+      <table class="table table-bordered table-sm align-middle">
+
+        <!-- =========================
+        TABLE HEADER
+        ========================= -->
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Practitioner</th>
+            <th>Service</th>
+            <!-- Centered column header -->
+            <th class="text-center">Status</th>
+          </tr>
+        </thead>
+
+
+        <!-- =========================
+        TABLE BODY
+        ========================= -->
+        <tbody>
+
+          <% bookings.forEach(b => { %>
+
+            <tr>
+
+              <!-- Booking ID -->
+              <td><%= b.id %></td>
+
+              <!-- Formatted Date (UK format) -->
+              <td>
+                <%= new Date(b.booking_date).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric"
+                }) %>
+              </td>
+
+              <!-- Time -->
+              <td><%= b.booking_time %></td>
+
+              <!-- Patient Name -->
+              <td><%= b.patient %></td>
+
+              <!-- Practitioner Name -->
+              <td><%= b.practitioner %></td>
+
+              <!-- Service Name -->
+              <td><%= b.service %></td>
+
+              <!-- Status (centered + colored badge) -->
+              <td class="text-center">
+
+                <% if (b.status === "booked") { %>
+                  <span class="badge bg-primary">
+                    Booked
+                  </span>
+
+                <% } else if (b.status === "completed") { %>
+                  <span class="badge bg-success">
+                    Completed
+                  </span>
+
+                <% } else if (b.status === "cancelled") { %>
+                  <span class="badge bg-danger">
+                    Cancelled
+                  </span>
+
+                <% } else { %>
+                  <span class="badge bg-secondary">
+                    <%= b.status %>
+                  </span>
+                <% } %>
+
+              </td>
+
+            </tr>
+
+          <% }) %>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  <% } %>
+
+</div>
+
+<!-- Bootstrap JS (optional but safe to include) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

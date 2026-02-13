@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Appointments | MediBook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    body {
+      background: linear-gradient(to bottom, #f4f6f9, #eef2f7);
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    .page-title {
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .booking-card {
+      border-radius: 14px;
+      border: none;
+      transition: 0.2s ease-in-out;
+    }
+
+    .booking-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .status-pill {
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 50px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .notes-area {
+      resize: none;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .save-btn {
+      border-radius: 10px;
+      padding: 6px 14px;
+    }
+
+    .filter-bar a {
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-size: 13px;
+    }
+
+    .date-big {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .time-muted {
+      font-size: 13px;
+      color: #6c757d;
+    }
+
+    .patient-label {
+      font-size: 12px;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .notes-label {
+      font-size: 12px;
+      color: #6c757d;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="container py-5">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="page-title">My Appointments</h4>
+
+    <a href="/practitioner" class="btn btn-outline-dark btn-sm">
+      Back to Dashboard
+    </a>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar mb-4 d-flex gap-2 flex-wrap">
+
+    <a href="?filter=upcoming"
+       class="btn btn-sm <%= currentFilter === 'upcoming' ? 'btn-primary' : 'btn-outline-primary' %>">
+      Upcoming
+    </a>
+
+    <a href="?filter=completed"
+       class="btn btn-sm <%= currentFilter === 'completed' ? 'btn-success' : 'btn-outline-success' %>">
+      Completed
+    </a>
+
+    <a href="?filter=missed"
+       class="btn btn-sm <%= currentFilter === 'missed' ? 'btn-danger' : 'btn-outline-danger' %>">
+      Missed
+    </a>
+
+    <a href="?filter=cancelled"
+       class="btn btn-sm <%= currentFilter === 'cancelled' ? 'btn-secondary' : 'btn-outline-secondary' %>">
+      Cancelled
+    </a>
+
+    <a href="?filter=all"
+       class="btn btn-sm <%= currentFilter === 'all' ? 'btn-dark' : 'btn-outline-dark' %>">
+      All
+    </a>
+
+  </div>
+
+  <% if (bookings.length === 0) { %>
+    <div class="alert alert-light border text-center">
+      No appointments found for this category.
+    </div>
+  <% } %>
+
+  <!-- BOOKINGS LIST -->
+  <div class="row g-3">
+
+    <% bookings.forEach(b => { %>
+
+      <div class="col-12">
+        <div class="card booking-card shadow-sm p-4">
+
+          <!-- DATE + STATUS -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+              <div class="date-big">
+                <%= new Date(b.booking_date).toLocaleDateString("en-GB", {
+                      weekday: "short",
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric"
+                    }) %>
+              </div>
+              <div class="time-muted">
+                <%= b.booking_time %>
+              </div>
+            </div>
+
+            <div>
+              <% if (b.status === "booked") { %>
+                <span class="bg-primary text-white status-pill">Booked</span>
+              <% } else if (b.status === "completed") { %>
+                <span class="bg-success text-white status-pill">Completed</span>
+              <% } else if (b.status === "cancelled") { %>
+                <span class="bg-secondary text-white status-pill">Cancelled</span>
+              <% } else { %>
+                <span class="bg-dark text-white status-pill">
+                  <%= b.status %>
+                </span>
+              <% } %>
+            </div>
+
+          </div>
+
+          <!-- PATIENT -->
+          <div class="mb-3">
+            <div class="patient-label">Patient</div>
+            <div class="fw-semibold">
+              <%= b.patient %>
+            </div>
+          </div>
+
+          <!-- NOTES -->
+          <form method="POST" action="/practitioner/bookings/<%= b.id %>/notes">
+
+            <div class="mb-2">
+              <div class="notes-label">Clinical Notes</div>
+              <textarea
+                name="notes"
+                class="form-control notes-area mt-1"
+                rows="2"
+              ><%= b.notes || "" %></textarea>
+            </div>
+
+            <div class="text-end">
+              <button class="btn btn-primary btn-sm save-btn">
+                Save Notes
+              </button>
+            </div>
+
+                    </form>
+
+          <!-- ACTION BUTTONS -->
+          <% if (b.status === "booked") { %>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+
+              <form method="POST" action="/practitioner/bookings/<%= b.id %>/complete">
+                <button class="btn btn-sm btn-success">
+                  Mark Completed
+                </button>
+              </form>
+
+              <form method="POST" action="/practitioner/bookings/<%= b.id %>/cancel">
+                <button class="btn btn-sm btn-outline-danger">
+                  Cancel
+                </button>
+              </form>
+
+            </div>
+          <% } %>
+
+        </div>
+      </div>
+
+
+    <% }) %>
+
+  </div>
+
+</div>
+
+</body>
+</html>

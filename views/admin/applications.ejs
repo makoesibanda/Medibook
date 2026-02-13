@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Practitioner Applications | MediBook</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+</head>
+
+<body class="bg-light">
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/admin">
+      MediBook Admin
+    </a>
+    <a href="/admin" class="btn btn-outline-light btn-sm">
+      Dashboard
+    </a>
+  </div>
+</nav>
+
+<div class="container py-5" style="max-width: 1100px;">
+
+  <div class="mb-4">
+    <h3 class="fw-bold mb-1">Practitioner Applications</h3>
+    <p class="text-muted mb-0">
+      Review and approve practitioner registrations.
+    </p>
+  </div>
+
+  <% if (applications.length === 0) { %>
+
+    <div class="alert alert-info">
+      No applications submitted yet.
+    </div>
+
+  <% } else { %>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Bio</th>
+                <th>Status</th>
+                <th style="width: 250px;">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% applications.forEach(app => { %>
+                <tr>
+
+                  <td class="fw-bold"><%= app.full_name %></td>
+                  <td><%= app.email %></td>
+                  <td><%= app.bio || "-" %></td>
+
+                  <td>
+                    <% if (app.status === "pending") { %>
+                      <span class="badge bg-warning text-dark">
+                        Pending
+                      </span>
+                    <% } else if (app.status === "approved") { %>
+                      <span class="badge bg-success">
+                        Approved
+                      </span>
+                    <% } else { %>
+                      <span class="badge bg-danger">
+                        Rejected
+                      </span>
+                    <% } %>
+                  </td>
+
+                  <td>
+
+                    <% if (app.status === "pending") { %>
+
+                      <!-- APPROVE FORM -->
+                      <form method="POST"
+                            action="/admin/applications/<%= app.id %>/approve"
+                            class="d-flex gap-2 mb-2">
+
+                        <select name="service_id"
+                                class="form-select form-select-sm"
+                                required>
+
+                          <option value="">Select service</option>
+                          <% services.forEach(s => { %>
+                            <option value="<%= s.id %>">
+                              <%= s.name %>
+                            </option>
+                          <% }) %>
+
+                        </select>
+
+                        <button class="btn btn-sm btn-success">
+                          Approve
+                        </button>
+
+                      </form>
+
+                      <!-- REJECT FORM -->
+                      <form method="POST"
+                            action="/admin/applications/<%= app.id %>/reject">
+
+                        <button class="btn btn-sm btn-outline-danger">
+                          Reject
+                        </button>
+
+                      </form>
+
+                    <% } else { %>
+
+                      <span class="text-muted">
+                        No action available
+                      </span>
+
+                    <% } %>
+
+                  </td>
+
+                </tr>
+              <% }) %>
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  <% } %>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
