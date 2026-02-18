@@ -49,10 +49,12 @@ router.post("/login", async (req, res) => {
   try {
 
     // Find user by email
-    const [[user]] = await db.execute(
-      "SELECT * FROM users WHERE email=? LIMIT 1",
-      [email]
-    );
+   const { rows } = await db.query(
+  "SELECT * FROM users WHERE email=$1 LIMIT 1",
+  [email]
+);
+
+const user = rows[0];
 
     if (!user) {
 return res.render("login", { 
@@ -79,7 +81,7 @@ if (!user.is_verified) {
   const token = crypto.randomBytes(32).toString("hex");
 
   // Update token in database
-  await db.execute(`
+  await db.query(`
     UPDATE users
     SET verification_token = ?
     WHERE id = ?
@@ -140,7 +142,7 @@ PRACTITIONER REGISTRATION PAGE
 */
 router.get("/practitioner/register", async (req, res) => {
   try {
-    const [services] = await db.execute(`
+    const [services] = await db.query(`
       SELECT id, name
       FROM services
       ORDER BY name
@@ -174,7 +176,7 @@ const { full_name, email, password, confirm_password, bio, service_id } = req.bo
 
   try {
     // ALWAYS load services first
-    const [services] = await db.execute(`
+    const [services] = await db.query(`
       SELECT id, name
       FROM services
       ORDER BY name
@@ -209,14 +211,14 @@ if (!isStrongPassword(password)) {
 }
 
 
-    const [[existing]] = await db.execute(
+    const [[existing]] = await db.query(
       "SELECT id FROM users WHERE email = ? LIMIT 1",
       [email]
     );
 
    if (existing) {
 
-  const [[existingUser]] = await db.execute(
+  const [[existingUser]] = await db.query(
     "SELECT is_verified FROM users WHERE email = ? LIMIT 1",
     [email]
   );
@@ -225,7 +227,7 @@ if (!isStrongPassword(password)) {
 
     const token = crypto.randomBytes(32).toString("hex");
 
-    await db.execute(`
+    await db.query(`
       UPDATE users
       SET verification_token = ?
       WHERE email = ?
@@ -252,7 +254,7 @@ if (!isStrongPassword(password)) {
 
     const token = crypto.randomBytes(32).toString("hex");
 
-const [result] = await db.execute(`
+const [result] = await db.query(`
   INSERT INTO users 
   (full_name, email, password, role, is_verified, verification_token)
   VALUES (?, ?, ?, 'pending_practitioner', FALSE, ?)
@@ -262,7 +264,7 @@ const [result] = await db.execute(`
 await sendVerificationEmail(email, token);
 
 
-    await db.execute(`
+    await db.query(`
       INSERT INTO practitioner_applications (user_id, service_id, bio, status)
       VALUES (?, ?, ?, 'pending')
     `, [result.insertId, service_id, bio || null]);
@@ -272,7 +274,7 @@ res.redirect("/login?info=verify_email");
   } catch (err) {
     console.error(err);
 
-    const [services] = await db.execute(`
+    const [services] = await db.query(`
       SELECT id, name
       FROM services
       ORDER BY name
@@ -340,14 +342,14 @@ if (!isStrongPassword(password)) {
 
 
 
-    const [[existing]] = await db.execute(
+    const [[existing]] = await db.query(
       "SELECT id FROM users WHERE email=? LIMIT 1",
       [email]
     );
 
   if (existing) {
 
-  const [[existingUser]] = await db.execute(
+  const [[existingUser]] = await db.query(
     "SELECT is_verified FROM users WHERE email = ? LIMIT 1",
     [email]
   );
@@ -357,7 +359,7 @@ if (!isStrongPassword(password)) {
 
     const token = crypto.randomBytes(32).toString("hex");
 
-    await db.execute(`
+    await db.query(`
       UPDATE users
       SET verification_token = ?
       WHERE email = ?
@@ -384,7 +386,7 @@ if (!isStrongPassword(password)) {
 
     const token = crypto.randomBytes(32).toString("hex");
 
-    await db.execute(`
+    await db.query(`
       INSERT INTO users 
       (full_name, email, password, role, is_verified, verification_token)
       VALUES (?, ?, ?, 'patient', FALSE, ?)
@@ -435,7 +437,7 @@ router.get("/verify", async (req, res) => {
   }
 
   try {
-    const [[user]] = await db.execute(`
+    const [[user]] = await db.query(`
       SELECT id
       FROM users
       WHERE verification_token = ?
@@ -446,7 +448,7 @@ router.get("/verify", async (req, res) => {
       return res.redirect("/login?error=invalid_token");
     }
 
-    await db.execute(`
+    await db.query(`
       UPDATE users
       SET is_verified = TRUE,
           verification_token = NULL
