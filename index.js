@@ -1,4 +1,4 @@
-// Load environment variables (.env)/...
+// Load environment variables (.env)
 require("dotenv").config();
 
 // Core dependencies
@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 
 /*
 ================================
-SESSION CONFIGg
+SESSION CONFIG
 ================================
 */
 
@@ -46,20 +46,19 @@ app.use(
 );
 
 /*
-=================================
+================================
 DATABASE CONNECTION
-==================================
+================================
 */
 
-const db = new Pool({
+const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: 5432,
-  ssl: { rejectUnauthorized: false }
+  database: process.env.DB_NAME
 });
 
+// Make DB available everywhere
 global.db = db;
 
 /*
@@ -107,4 +106,3 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log("MEDIBOOK running on http://localhost:" + PORT);
 });
-////
