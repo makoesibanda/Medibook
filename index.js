@@ -34,10 +34,13 @@ app.set("views", path.join(__dirname, "views"));
 // GLOBAL VARIABLES FOR ALL VIEWS
 // =====================================
 // makes BASE_PATH usable inside EJS
-app.use((req, res, next) => {
-  res.locals.BASE_PATH = BASE_PATH;
+app.use((req,res,next)=>{
+  res.locals.BASE_PATH = process.env.BASE_PATH || "";
   next();
 });
+
+
+
 
 
 // =====================================
