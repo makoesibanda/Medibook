@@ -5,6 +5,9 @@ const { sendBookingConfirmation } = require("../utils/mailer");
 
 const router = express.Router();
 
+const BASE = process.env.BASE_PATH || "";
+const withBase = (p) => (BASE ? `${BASE}${p}` : p);
+
 /*
 =====================================
 PATIENT DASHBOARD
@@ -36,7 +39,7 @@ router.get("/book", requireAuth, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.redirect("/patient");
+res.redirect(withBase("/patient"));
   }
 });
 
@@ -170,13 +173,13 @@ router.post("/book", requireAuth, async (req, res) => {
   const { practitioner_id, booking_date, booking_time } = req.body;
 
   if (!practitioner_id || !booking_date || !booking_time) {
-    return res.redirect("/patient/book");
+return res.redirect(withBase("/patient/book"));
   }
 
  // 🔒 Block booking if slot already passed (even by 1 minute)
 const slotDateTime = new Date(`${booking_date}T${booking_time}`);
 if (slotDateTime <= new Date()) {
-  return res.redirect("/patient/book?error=slot_passed");
+return res.redirect(withBase("/patient/book?error=slot_passed"));
 }
 
 // 🔒 Block multiple bookings on same day for same patient
@@ -190,7 +193,7 @@ const [[existingBooking]] = await db.execute(`
 `, [req.session.user.id, booking_date]);
 
 if (existingBooking) {
-  return res.redirect("/patient/book?error=already_booked_same_day");
+return res.redirect(withBase("/patient/book?error=already_booked_same_day"));
 }
 
 
@@ -234,17 +237,17 @@ if (existingBooking) {
   }
 
   // 4. Redirect success
-  return res.redirect("/patient/bookings?success=booked");
+return res.redirect(withBase("/patient/bookings?success=booked"));
 
 } catch (err) {
 
   // Slot already taken
   if (err.code === "ER_DUP_ENTRY") {
-    return res.redirect("/patient/book?error=slot_taken");
+return res.redirect(withBase("/patient/book?error=slot_taken"));
   }
 
   console.error(err);
-  return res.redirect("/patient/book");
+return res.redirect(withBase("/patient/book"));
 }
 
 
@@ -280,7 +283,7 @@ router.get("/bookings", requireAuth, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.redirect("/patient");
+res.redirect(withBase("/patient"));
   }
 });
 
@@ -305,7 +308,8 @@ router.post("/bookings/:id/cancel", requireAuth, async (req, res) => {
 
     // If booking not found
     if (!booking) {
-      return res.redirect("/patient/bookings");
+      return res.redirect(withBase("/patient/bookings")
+);
     }
 
     // 2. Combine date + time into JS Date
@@ -321,7 +325,7 @@ router.post("/bookings/:id/cancel", requireAuth, async (req, res) => {
 
     // 4. Block cancellation if less than 4 hours
     if (diffHours < 4) {
-      return res.redirect("/patient/bookings?error=too_late_to_cancel");
+return res.redirect(withBase("/patient/bookings?error=too_late_to_cancel"));
     }
 
     // 5. Delete booking
@@ -334,11 +338,12 @@ router.post("/bookings/:id/cancel", requireAuth, async (req, res) => {
       req.session.user.id
     ]);
 
-    return res.redirect("/patient/bookings?success=cancelled");
+return res.redirect(withBase("/patient/bookings?success=cancelled"));
 
   } catch (err) {
     console.error(err);
-    return res.redirect("/patient/bookings");
+    return res.redirect(withBase("/patient/bookings")
+);
   }
 });
 

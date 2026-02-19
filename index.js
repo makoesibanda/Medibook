@@ -1,4 +1,6 @@
-// Load environment variables (.env)
+// =====================================
+// LOAD ENV VARIABLES
+// =====================================
 require("dotenv").config();
 
 // Core dependencies
@@ -10,33 +12,48 @@ const path = require("path");
 // Initialize express app
 const app = express();
 
-/*
-================================
-VIEW ENGINE CONFIG
-================================
-*/
 
+// =====================================
+// BASE PATH CONFIG
+// =====================================
+// This lets the app run:
+// Local -> /
+// Server -> /www/350/medibook
+
+const BASE_PATH = process.env.BASE_PATH || "";
+
+
+// =====================================
+// VIEW ENGINE CONFIG
+// =====================================
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-/*
-================================
-MIDDLEWARE
-================================
-*/
+
+// =====================================
+// GLOBAL VARIABLES FOR ALL VIEWS
+// =====================================
+// makes BASE_PATH usable inside EJS
+app.use((req, res, next) => {
+  res.locals.BASE_PATH = BASE_PATH;
+  next();
+});
+
+
+// =====================================
+// MIDDLEWARE
+// =====================================
 
 // Serve static files (css, images, js)
-app.use(express.static(path.join(__dirname, "public")));
+app.use(BASE_PATH, express.static(path.join(__dirname, "public")));
 
 // Parse form data
 app.use(express.urlencoded({ extended: true }));
 
-/*
-================================
-SESSION CONFIG
-================================
-*/
 
+// =====================================
+// SESSION CONFIG
+// =====================================
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -45,12 +62,10 @@ app.use(
   })
 );
 
-/*
-================================
-DATABASE CONNECTION
-================================
-*/
 
+// =====================================
+// DATABASE CONNECTION
+// =====================================
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -61,48 +76,39 @@ const db = mysql.createPool({
 // Make DB available everywhere
 global.db = db;
 
-/*
-================================
-ROUTES (MODULAR)
-================================
-*/
 
-// Authentication (login/register/logout)
-app.use("/", require("./routes/auth"));
+// =====================================
+// ROUTES (MODULAR)
+// =====================================
 
-// Patient related routes
-app.use("/patient", require("./routes/patient"));
+// Auth routes
+app.use(BASE_PATH + "/", require("./routes/auth"));
 
-app.use("/practitioner", require("./routes/practitioner"));
+// Patient routes
+app.use(BASE_PATH + "/patient", require("./routes/patient"));
+
+// Practitioner routes
+app.use(BASE_PATH + "/practitioner", require("./routes/practitioner"));
+
+// Admin routes
+app.use(BASE_PATH + "/admin", require("./routes/admin"));
 
 
-// Admin related routes
-app.use("/admin", require("./routes/admin"));
-
-/*
-================================
-ROOT REDIRECT
-================================
-/*
-================================
-LANDING PAGE
-================================
-*/
-
-app.get("/", (req, res) => {
+// =====================================
+// LANDING PAGE
+// =====================================
+app.get(BASE_PATH + "/", (req, res) => {
   res.render("index", {
     user: req.session.user || null
   });
 });
 
-/*
-================================
-START SERVER
-================================
-*/
 
+// =====================================
+// START SERVER
+// =====================================
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
-  console.log("MEDIBOOK running on http://localhost:" + PORT);
+  console.log("MEDIBOOK running on port " + PORT);
 });

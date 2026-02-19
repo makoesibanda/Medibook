@@ -7,6 +7,8 @@ const { sendVerificationEmail } = require("../utils/mailer");
 
 
 const router = express.Router();
+const BASE = process.env.BASE_PATH || "";
+
 const { requireAuth } = require("../middleware/auth");
 
 
@@ -108,20 +110,21 @@ if (!user.is_verified) {
 
     // Redirect based on role
  if (user.role === "admin") {
-  return res.redirect("/admin");
+return res.redirect(BASE + "/admin");
+
 }
 
 if (user.role === "pending_practitioner") {
-  return res.redirect("/login?info=pending");
+return res.redirect(BASE + "/login?info=pending");
 }
 
 // If practitioner, allow mode selection
 if (user.role === "practitioner") {
-  return res.redirect("/select-mode");
+return res.redirect(BASE + "/select-mode");
 }
 
 // default patient
-return res.redirect("/patient");
+return res.redirect(BASE + "/patient");
 
 
   } catch (err) {
@@ -269,7 +272,7 @@ await sendVerificationEmail(email, token);
       VALUES (?, ?, ?, 'pending')
     `, [result.insertId, service_id, bio || null]);
 
-res.redirect("/login?info=verify_email");
+res.redirect(BASE + "/login?info=verify_email");
 
   } catch (err) {
     console.error(err);
@@ -394,7 +397,7 @@ if (!isStrongPassword(password)) {
 
     await sendVerificationEmail(email, token);
 
-    return res.redirect("/login?info=verify_email");
+return res.redirect(BASE + "/login?info=verify_email");
 
   } catch (err) {
     console.error(err);
@@ -415,7 +418,7 @@ router.get("/select-mode", requireAuth, (req, res) => {
 
   // Only practitioners need mode selection
   if (req.session.user.role !== "practitioner") {
-    return res.redirect("/patient");
+return res.redirect(BASE + "/patient");
   }
 
   res.render("select-mode", {
@@ -433,7 +436,7 @@ router.get("/verify", async (req, res) => {
   const { token } = req.query;
 
   if (!token) {
-    return res.redirect("/login");
+return res.redirect(BASE + "/login");
   }
 
   try {
@@ -445,7 +448,7 @@ router.get("/verify", async (req, res) => {
     `, [token]);
 
     if (!user) {
-      return res.redirect("/login?error=invalid_token");
+return res.redirect(BASE + "/login?error=invalid_token");
     }
 
     await db.query(`
@@ -455,11 +458,11 @@ router.get("/verify", async (req, res) => {
       WHERE id = ?
     `, [user.id]);
 
-    res.redirect("/login?success=verified");
+res.redirect(BASE + "/login?success=verified");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/login");
+res.redirect(BASE + "/login");
   }
 });
 
@@ -472,7 +475,7 @@ Destroys session
 */
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/login");
+res.redirect(BASE + "/login");
   });
 });
 
