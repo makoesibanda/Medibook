@@ -11,19 +11,24 @@ const app = express();
 =====================================
 BASE PATH FOR DEPLOYMENT
 =====================================
-If running locally → BASE_PATH = ""
-If deployed on Goldsmiths → BASE_PATH = "/www/350/medibook"
+Local: ""
+Goldsmiths: "/www/350/medibook"
 */
 const BASE_PATH = process.env.BASE_PATH || "";
 
-// Make BASE_PATH available everywhere (EJS + routes)
+// Make BASE_PATH available in EJS
 app.locals.BASE_PATH = BASE_PATH;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Static files must also use BASE_PATH
-app.use(`${BASE_PATH}`, express.static(path.join(__dirname, "public")));
+/*
+=====================================
+STATIC FILES
+=====================================
+Must be mounted EXACTLY like this:
+*/
+app.use(BASE_PATH, express.static(path.join(__dirname, "public")));
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,14 +40,14 @@ app.use(
   })
 );
 
-// Make BASE_PATH + user available in ALL EJS templates
+// Make BASE_PATH + user available in templates
 app.use((req, res, next) => {
   res.locals.BASE_PATH = BASE_PATH;
   res.locals.user = req.session?.user || null;
   next();
 });
 
-// Database connection
+// Database
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -54,8 +59,9 @@ global.db = db;
 
 /*
 =====================================
-ROUTES (all mounted under BASE_PATH)
+ROUTES
 =====================================
+Mount ALL routes under BASE_PATH
 */
 app.use(`${BASE_PATH}/`, require("./routes/auth"));
 app.use(`${BASE_PATH}/patient`, require("./routes/patient"));
