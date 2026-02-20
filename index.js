@@ -7,42 +7,76 @@ const path = require("path");
 
 const app = express();
 
+/* =========================
+   BASE PATH CONFIG
+   ========================= */
+const BASE_PATH = process.env.BASE_PATH || "";
+
+/* =========================
+   VIEW ENGINE
+   ========================= */
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.urlencoded({ extended: true }));
+/* =========================
+   GLOBAL VIEW VARIABLES
+   ========================= */
+app.use((req,res,next)=>{
+  res.locals.BASE_PATH = BASE_PATH;
+  res.locals.user = req.session?.user || null;
+  next();
+});
 
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-  })
-);
+/* =========================
+   STATIC FILES
+   ========================= */
+app.use(BASE_PATH, express.static(path.join(__dirname,"public")));
 
+/* =========================
+   BODY PARSER
+   ========================= */
+app.use(express.urlencoded({ extended:true }));
+
+/* =========================
+   SESSION
+   ========================= */
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave:false,
+  saveUninitialized:false
+}));
+
+/* =========================
+   DATABASE
+   ========================= */
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME
 });
-
 global.db = db;
 
-app.use("/", require("./routes/auth"));
-app.use("/patient", require("./routes/patient"));
-app.use("/practitioner", require("./routes/practitioner"));
-app.use("/admin", require("./routes/admin"));
+/* =========================
+   ROUTES
+   ========================= */
+app.use(BASE_PATH + "/", require("./routes/auth"));
+app.use(BASE_PATH + "/patient", require("./routes/patient"));
+app.use(BASE_PATH + "/practitioner", require("./routes/practitioner"));
+app.use(BASE_PATH + "/admin", require("./routes/admin"));
 
-app.get("/", (req, res) => {
-  res.render("index", {
-    user: req.session.user || null
-  });
+/* =========================
+   LANDING PAGE
+   ========================= */
+app.get(BASE_PATH + "/", (req,res)=>{
+  res.render("index");
 });
 
+/* =========================
+   SERVER
+   ========================= */
 const PORT = process.env.PORT || 8001;
 
-app.listen(PORT, () => {
-  console.log("MEDIBOOK running on port " + PORT);
+app.listen(PORT,()=>{
+  console.log("Medibook running on port " + PORT);
 });
