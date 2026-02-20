@@ -21,6 +21,13 @@ app.use(
   })
 );
 
+// STEP 1: Make BASE_PATH + user available in ALL EJS templates
+app.use((req, res, next) => {
+  res.locals.BASE_PATH = process.env.BASE_PATH || "";
+  res.locals.user = req.session?.user || null;
+  next();
+});
+
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -36,9 +43,7 @@ app.use("/practitioner", require("./routes/practitioner"));
 app.use("/admin", require("./routes/admin"));
 
 app.get("/", (req, res) => {
-  res.render("index", {
-    user: req.session.user || null
-  });
+  res.render("index"); // user is already in res.locals.user now
 });
 
 const PORT = process.env.PORT || 8001;
