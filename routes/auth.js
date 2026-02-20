@@ -113,16 +113,16 @@ if (!user.is_verified) {
 }
 
 if (user.role === "pending_practitioner") {
-  return res.redirect("/login?info=pending");
+  return res.redirect("/www/350/medibook/login?info=pending");
 }
 
 // If practitioner, allow mode selection
 if (user.role === "practitioner") {
-  return res.redirect("/select-mode");
+  return res.redirect("/www/350/medibook/select-mode");
 }
 
 // default patient
-return res.redirect("/patient");
+return res.redirect("/www/350/medibook/patient");
 
 
   } catch (err) {
@@ -270,7 +270,7 @@ await sendVerificationEmail(email, token);
       VALUES (?, ?, ?, 'pending')
     `, [result.insertId, service_id, bio || null]);
 
-res.redirect("/login?info=verify_email");
+res.redirect("/www/350/medibook/login?info=verify_email");
 
   } catch (err) {
     console.error(err);
@@ -395,7 +395,7 @@ if (!isStrongPassword(password)) {
 
     await sendVerificationEmail(email, token);
 
-    return res.redirect("/login?info=verify_email");
+    return res.redirect("/www/350/medibook/login?info=verify_email");
 
   } catch (err) {
     console.error(err);
@@ -416,7 +416,7 @@ router.get("/select-mode", requireAuth, (req, res) => {
 
   // Only practitioners need mode selection
   if (req.session.user.role !== "practitioner") {
-    return res.redirect("/patient");
+    return res.redirect("/www/350/medibook/patient");
   }
 
   res.render("select-mode", {
@@ -434,7 +434,7 @@ router.get("/verify", async (req, res) => {
   const { token } = req.query;
 
   if (!token) {
-    return res.redirect("/login");
+    return res.redirect("/www/350/medibook/login");
   }
 
   try {
@@ -446,7 +446,7 @@ router.get("/verify", async (req, res) => {
     `, [token]);
 
     if (!user) {
-      return res.redirect("/login?error=invalid_token");
+      return res.redirect("/www/350/medibook/login?error=invalid_token");
     }
 
     await db.query(`
@@ -456,11 +456,11 @@ router.get("/verify", async (req, res) => {
       WHERE id = ?
     `, [user.id]);
 
-    res.redirect("/login?success=verified");
+    res.redirect("/www/350/medibook/login?success=verified");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/login");
+    res.redirect("/www/350/medibook/login");
   }
 });
 
@@ -473,7 +473,7 @@ Destroys session
 */
 router.get("/logout", (req, res) => {
   req.session.destroy(() => {
-    res.redirect("/login");
+    res.redirect("/www/350/medibook/login");
   });
 });
 
