@@ -53,12 +53,13 @@ router.post("/login", async (req, res) => {
   try {
 
     // Find user by email
-   const { rows } = await db.query(
-  "SELECT * FROM users WHERE email=$1 LIMIT 1",
+  const [rows] = await db.query(
+  "SELECT * FROM users WHERE email = ? LIMIT 1",
   [email]
 );
 
 const user = rows[0];
+
 
     if (!user) {
 return res.render("login", { 
