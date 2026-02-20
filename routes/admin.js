@@ -35,7 +35,7 @@ router.get("/services", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error("Admin services load failed:", err);
-    res.redirect("/admin");
+    res.redirect("/www/350/medibook/admin");
   }
 });
 
@@ -54,7 +54,7 @@ router.post("/services", requireAuth, requireAdmin, async (req, res) => {
 
   // Basic validation
   if (!name || !price || !duration_minutes) {
-    return res.redirect("/admin/services");
+    return res.redirect("/www/350/medibook/admin/services");
   }
 
   try {
@@ -63,11 +63,11 @@ router.post("/services", requireAuth, requireAdmin, async (req, res) => {
       VALUES (?, ?, ?)
     `, [name, price, duration_minutes]);
 
-    res.redirect("/admin/services");
+    res.redirect("/www/350/medibook/admin/services");
 
   } catch (err) {
     console.error("Create service failed:", err);
-    res.redirect("/admin/services");
+    res.redirect("/www/350/medibook/admin/services");
   }
 });
 
@@ -85,11 +85,11 @@ router.post("/services/:id/delete", requireAuth, requireAdmin, async (req, res) 
       [req.params.id]
     );
 
-    res.redirect("/admin/services");
+    res.redirect("/www/350/medibook/admin/services");
 
   } catch (err) {
     console.error("Delete service failed:", err);
-    res.redirect("/admin/services");
+    res.redirect("/www/350/medibook/admin/services");
   }
 });
 
@@ -123,7 +123,7 @@ res.render("admin/bookings", { bookings });
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin");
+    res.redirect("/www/350/medibook/admin");
   }
 });
 /*
@@ -160,7 +160,7 @@ router.get("/applications", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error("Load applications failed:", err);
-    res.redirect("/admin");
+    res.redirect("/www/350/medibook/admin");
   }
 });
 
@@ -174,7 +174,7 @@ router.post("/applications/:id/approve", requireAuth, requireAdmin, async (req, 
   const applicationId = req.params.id;
 
   if (!service_id) {
-    return res.redirect("/admin/applications");
+    return res.redirect("/www/350/medibook/admin/applications");
   }
 
   try {
@@ -186,7 +186,7 @@ router.post("/applications/:id/approve", requireAuth, requireAdmin, async (req, 
     `, [applicationId]);
 
     if (!application) {
-      return res.redirect("/admin/applications");
+      return res.redirect("/www/350/medibook/admin/applications");
     }
 
     // 1. Promote user to practitioner
@@ -209,11 +209,11 @@ router.post("/applications/:id/approve", requireAuth, requireAdmin, async (req, 
       WHERE id = ?
     `, [applicationId]);
 
-    res.redirect("/admin/applications");
+    res.redirect("/www/350/medibook/admin/applications");
 
   } catch (err) {
     console.error("Approve application failed:", err);
-    res.redirect("/admin/applications");
+    res.redirect("/www/350/medibook/admin/applications");
   }
 });
 
@@ -230,11 +230,11 @@ router.post("/applications/:id/reject", requireAuth, requireAdmin, async (req, r
       WHERE id = ?
     `, [req.params.id]);
 
-    res.redirect("/admin/applications");
+    res.redirect("/www/350/medibook/admin/applications");
 
   } catch (err) {
     console.error("Reject application failed:", err);
-    res.redirect("/admin/applications");
+    res.redirect("/www/350/medibook/admin/applications");
   }
 });
 
@@ -273,7 +273,7 @@ router.get("/practitioners", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin");
+    res.redirect("/www/350/medibook/admin");
   }
 });
 
@@ -293,11 +293,11 @@ router.post("/practitioners/:id/update-service", requireAuth, requireAdmin, asyn
       WHERE id = ?
     `, [service_id, req.params.id]);
 
-    res.redirect("/admin/practitioners");
+    res.redirect("/www/350/medibook/admin/practitioners");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin/practitioners");
+    res.redirect("/www/350/medibook/admin/practitioners");
   }
 });
 
@@ -317,7 +317,7 @@ router.post("/practitioners/:id/deactivate", requireAuth, requireAdmin, async (r
     );
 
     if (!prac) {
-      return res.redirect("/admin/practitioners");
+      return res.redirect("/www/350/medibook/admin/practitioners");
     }
 
     // Remove practitioner record
@@ -332,11 +332,11 @@ router.post("/practitioners/:id/deactivate", requireAuth, requireAdmin, async (r
       [prac.user_id]
     );
 
-    res.redirect("/admin/practitioners");
+    res.redirect("/www/350/medibook/admin/practitioners");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin/practitioners");
+    res.redirect("/www/350/medibook/admin/practitioners");
   }
 });
 
@@ -382,7 +382,7 @@ router.get("/availability", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin");
+    res.redirect("/www/350/medibook/admin");
   }
 });
 
@@ -404,7 +404,7 @@ const {
 
  // Block invalid time ranges
 if (start_time >= end_time) {
-  return res.redirect("/admin/availability");
+  return res.redirect("/www/350/medibook/admin/availability");
 }
 
 try {
@@ -434,11 +434,11 @@ try {
     );
   }
 
-  res.redirect("/admin/availability");
+  res.redirect("/www/350/medibook/admin/availability");
 
 } catch (err) {
   console.error(err);
-  res.redirect("/admin/availability");
+  res.redirect("/www/350/medibook/admin/availability");
 }
 
 });
@@ -484,7 +484,7 @@ router.get("/users", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin");
+    res.redirect("/www/350/medibook/admin");
   }
 });
 
@@ -505,11 +505,11 @@ router.post("/users/:id/make-patient", requireAuth, requireAdmin, async (req, re
       [req.params.id]
     );
 
-    res.redirect("/admin/users");
+    res.redirect("/www/350/medibook/admin/users");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin/users");
+    res.redirect("/www/350/medibook/admin/users");
   }
 });
 
@@ -525,7 +525,7 @@ router.post("/users/:id/make-practitioner", requireAuth, requireAdmin, async (re
     const { service_id } = req.body;
 
     if (!service_id) {
-      return res.redirect("/admin/users");
+      return res.redirect("/www/350/medibook/admin/users");
     }
 
     // 1. Update user role
@@ -540,11 +540,11 @@ router.post("/users/:id/make-practitioner", requireAuth, requireAdmin, async (re
       [req.params.id, service_id]
     );
 
-    res.redirect("/admin/users");
+    res.redirect("/www/350/medibook/admin/users");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin/users");
+    res.redirect("/www/350/medibook/admin/users");
   }
 });
 
@@ -575,7 +575,7 @@ router.post("/availability/:id/delete", requireAuth, requireAdmin, async (req, r
     `, [availabilityId]);
 
     if (row.cnt > 0) {
-      return res.redirect("/admin/availability");
+      return res.redirect("/www/350/medibook/admin/availability");
     }
 
     // Delete availability
@@ -584,11 +584,11 @@ router.post("/availability/:id/delete", requireAuth, requireAdmin, async (req, r
       [availabilityId]
     );
 
-    res.redirect("/admin/availability");
+    res.redirect("/www/350/medibook/admin/availability");
 
   } catch (err) {
     console.error(err);
-    res.redirect("/admin/availability");
+    res.redirect("/www/350/medibook/admin/availability");
   }
 });
 
