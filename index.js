@@ -110,7 +110,7 @@ app.get(BASE_PATH + "/", (req, res) => {
 // =====================================
 // START SERVER
 // =====================================
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8001;
 
 app.listen(PORT, () => {
   console.log("MEDIBOOK running on port " + PORT);
