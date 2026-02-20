@@ -3,10 +3,6 @@ const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
 
-const BASE = process.env.BASE_PATH || "";
-const withBase = (p) => (BASE ? `${BASE}${p}` : p);
-
-
 /*
 =====================================
 ADMIN DASHBOARD
@@ -39,7 +35,7 @@ router.get("/services", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error("Admin services load failed:", err);
-res.redirect(withBase("/admin"));
+    res.redirect("/admin");
   }
 });
 
@@ -58,8 +54,7 @@ router.post("/services", requireAuth, requireAdmin, async (req, res) => {
 
   // Basic validation
   if (!name || !price || !duration_minutes) {
-    return res.redirect(withBase("/admin/services"));
-
+    return res.redirect("/admin/services");
   }
 
   try {
@@ -68,13 +63,11 @@ router.post("/services", requireAuth, requireAdmin, async (req, res) => {
       VALUES (?, ?, ?)
     `, [name, price, duration_minutes]);
 
-    res.redirect(withBase("/admin/services"));
-
+    res.redirect("/admin/services");
 
   } catch (err) {
     console.error("Create service failed:", err);
-    res.redirect(withBase("/admin/services"));
-
+    res.redirect("/admin/services");
   }
 });
 
@@ -92,13 +85,11 @@ router.post("/services/:id/delete", requireAuth, requireAdmin, async (req, res) 
       [req.params.id]
     );
 
-    res.redirect(withBase("/admin/services"));
-
+    res.redirect("/admin/services");
 
   } catch (err) {
     console.error("Delete service failed:", err);
-    res.redirect(withBase("/admin/services"));
-
+    res.redirect("/admin/services");
   }
 });
 
@@ -132,7 +123,7 @@ res.render("admin/bookings", { bookings });
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/admin"));
+    res.redirect("/admin");
   }
 });
 /*
@@ -169,7 +160,7 @@ router.get("/applications", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error("Load applications failed:", err);
-res.redirect(withBase("/admin"));
+    res.redirect("/admin");
   }
 });
 
@@ -183,8 +174,7 @@ router.post("/applications/:id/approve", requireAuth, requireAdmin, async (req, 
   const applicationId = req.params.id;
 
   if (!service_id) {
-    return res.redirect(withBase("/admin/applications"));
-
+    return res.redirect("/admin/applications");
   }
 
   try {
@@ -196,8 +186,7 @@ router.post("/applications/:id/approve", requireAuth, requireAdmin, async (req, 
     `, [applicationId]);
 
     if (!application) {
-      return res.redirect(withBase("/admin/applications"));
-
+      return res.redirect("/admin/applications");
     }
 
     // 1. Promote user to practitioner
@@ -220,13 +209,11 @@ router.post("/applications/:id/approve", requireAuth, requireAdmin, async (req, 
       WHERE id = ?
     `, [applicationId]);
 
-    res.redirect(withBase("/admin/applications"));
-
+    res.redirect("/admin/applications");
 
   } catch (err) {
     console.error("Approve application failed:", err);
-    res.redirect(withBase("/admin/applications"));
-
+    res.redirect("/admin/applications");
   }
 });
 
@@ -243,13 +230,11 @@ router.post("/applications/:id/reject", requireAuth, requireAdmin, async (req, r
       WHERE id = ?
     `, [req.params.id]);
 
-    res.redirect(withBase("/admin/applications"));
-
+    res.redirect("/admin/applications");
 
   } catch (err) {
     console.error("Reject application failed:", err);
-    res.redirect(withBase("/admin/applications"));
-
+    res.redirect("/admin/applications");
   }
 });
 
@@ -288,7 +273,7 @@ router.get("/practitioners", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/admin"));
+    res.redirect("/admin");
   }
 });
 
@@ -308,13 +293,11 @@ router.post("/practitioners/:id/update-service", requireAuth, requireAdmin, asyn
       WHERE id = ?
     `, [service_id, req.params.id]);
 
-    res.redirect(withBase("/admin/practitioners"));
-
+    res.redirect("/admin/practitioners");
 
   } catch (err) {
     console.error(err);
-    res.redirect(withBase("/admin/practitioners"));
-
+    res.redirect("/admin/practitioners");
   }
 });
 
@@ -334,8 +317,7 @@ router.post("/practitioners/:id/deactivate", requireAuth, requireAdmin, async (r
     );
 
     if (!prac) {
-      return res.redirect(withBase("/admin/practitioners"));
-
+      return res.redirect("/admin/practitioners");
     }
 
     // Remove practitioner record
@@ -350,13 +332,11 @@ router.post("/practitioners/:id/deactivate", requireAuth, requireAdmin, async (r
       [prac.user_id]
     );
 
-    res.redirect(withBase("/admin/practitioners"));
-
+    res.redirect("/admin/practitioners");
 
   } catch (err) {
     console.error(err);
-    res.redirect(withBase("/admin/practitioners"));
-
+    res.redirect("/admin/practitioners");
   }
 });
 
@@ -402,7 +382,7 @@ router.get("/availability", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/admin"));
+    res.redirect("/admin");
   }
 });
 
@@ -424,7 +404,7 @@ const {
 
  // Block invalid time ranges
 if (start_time >= end_time) {
-  return res.redirect(withBase("/admin/availability"));
+  return res.redirect("/admin/availability");
 }
 
 try {
@@ -454,13 +434,11 @@ try {
     );
   }
 
-  res.redirect(withBase("/admin/availability"));
-
+  res.redirect("/admin/availability");
 
 } catch (err) {
   console.error(err);
-  res.redirect(withBase("/admin/availability"));
-
+  res.redirect("/admin/availability");
 }
 
 });
@@ -506,7 +484,7 @@ router.get("/users", requireAuth, requireAdmin, async (req, res) => {
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/admin"));
+    res.redirect("/admin");
   }
 });
 
@@ -527,13 +505,11 @@ router.post("/users/:id/make-patient", requireAuth, requireAdmin, async (req, re
       [req.params.id]
     );
 
-    res.redirect(withBase("/admin/users"));
-
+    res.redirect("/admin/users");
 
   } catch (err) {
     console.error(err);
-    res.redirect(withBase("/admin/users"));
-
+    res.redirect("/admin/users");
   }
 });
 
@@ -549,8 +525,7 @@ router.post("/users/:id/make-practitioner", requireAuth, requireAdmin, async (re
     const { service_id } = req.body;
 
     if (!service_id) {
-      return res.redirect(withBase("/admin/users"));
-
+      return res.redirect("/admin/users");
     }
 
     // 1. Update user role
@@ -565,13 +540,11 @@ router.post("/users/:id/make-practitioner", requireAuth, requireAdmin, async (re
       [req.params.id, service_id]
     );
 
-   res.redirect(withBase("/admin/users"));
-
+    res.redirect("/admin/users");
 
   } catch (err) {
     console.error(err);
-   res.redirect(withBase("/admin/users"));
-
+    res.redirect("/admin/users");
   }
 });
 
@@ -602,8 +575,7 @@ router.post("/availability/:id/delete", requireAuth, requireAdmin, async (req, r
     `, [availabilityId]);
 
     if (row.cnt > 0) {
-      return res.redirect(withBase("/admin/availability"));
-
+      return res.redirect("/admin/availability");
     }
 
     // Delete availability
@@ -612,13 +584,11 @@ router.post("/availability/:id/delete", requireAuth, requireAdmin, async (req, r
       [availabilityId]
     );
 
-    res.redirect(withBase("/admin/availability"));
-
+    res.redirect("/admin/availability");
 
   } catch (err) {
     console.error(err);
-    res.redirect(withBase("/admin/availability"));
-
+    res.redirect("/admin/availability");
   }
 });
 

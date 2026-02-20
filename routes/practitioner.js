@@ -3,10 +3,6 @@ const { requireAuth, requirePractitioner } = require("../middleware/auth");
 
 const router = express.Router();
 
-const BASE = process.env.BASE_PATH || "";
-const withBase = (p) => (BASE ? `${BASE}${p}` : p);
-
-
  /*
 =====================================
 PRACTITIONER DASHBOARD (DYNAMIC)
@@ -24,7 +20,7 @@ router.get("/", requireAuth, requirePractitioner, async (req, res) => {
     );
 
     if (!prac) {
-return res.redirect(withBase("/"));
+      return res.redirect("/");
     }
 
     const practitionerId = prac.id;
@@ -82,7 +78,7 @@ return res.redirect(withBase("/"));
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/"));
+    res.redirect("/");
   }
 });
 
@@ -120,7 +116,7 @@ router.get("/bookings", requireAuth, requirePractitioner, async (req, res) => {
 
     if (!prac) {
       // Safety fallback
-return res.redirect(withBase("/practitioner"));
+      return res.redirect("/practitioner");
     }
 
     const practitionerId = prac.id;
@@ -215,7 +211,7 @@ else if (filter === "missed") {
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/practitioner"));
+    res.redirect("/practitioner");
   }
 });
 
@@ -240,11 +236,11 @@ router.post("/bookings/:id/notes", requireAuth, requirePractitioner, async (req,
         )
     `, [notes, req.params.id, req.session.user.id]);
 
-res.redirect(withBase("/practitioner/bookings"));
+    res.redirect("/practitioner/bookings");
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/practitioner/bookings"));
+    res.redirect("/practitioner/bookings");
   }
 
 });
@@ -266,11 +262,11 @@ router.post("/bookings/:id/complete", requireAuth, requirePractitioner, async (r
         )
     `, [req.params.id, req.session.user.id]);
 
-res.redirect(withBase("/practitioner/bookings"));
+    res.redirect("/practitioner/bookings");
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/practitioner/bookings"));
+    res.redirect("/practitioner/bookings");
   }
 });
 
@@ -292,11 +288,11 @@ router.post("/bookings/:id/cancel", requireAuth, requirePractitioner, async (req
         )
     `, [req.params.id, req.session.user.id]);
 
-res.redirect(withBase("/practitioner/bookings"));
+    res.redirect("/practitioner/bookings");
 
   } catch (err) {
     console.error(err);
-res.redirect(withBase("/practitioner/bookings"));
+    res.redirect("/practitioner/bookings");
   }
 });
 
