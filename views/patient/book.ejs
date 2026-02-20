@@ -477,7 +477,7 @@
           <span class="meta-pill">${escapeHtml(metaTime)}</span>
         </div>
 
-        <form method="POST" action="/patient/book" class="m-0">
+        <form method="POST" action="/www/350medibook/patient/book" class="m-0">
           <input type="hidden" name="practitioner_id" value="${p ? p.practitioner_id : ""}">
           <input type="hidden" name="booking_date" value="${state.selectedDate || ""}">
           <input type="hidden" name="booking_time" value="${state.selectedTime || ""}">
