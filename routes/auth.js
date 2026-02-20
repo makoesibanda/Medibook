@@ -7,10 +7,6 @@ const { sendVerificationEmail } = require("../utils/mailer");
 
 
 const router = express.Router();
-
-const BASE = process.env.BASE_PATH || "";
-const withBase = p => BASE + p;
-
 const { requireAuth } = require("../middleware/auth");
 
 
@@ -53,7 +49,7 @@ router.post("/login", async (req, res) => {
   try {
 
     // Find user by email
-  const [rows] = await db.query(
+const [rows] = await db.query(
   "SELECT * FROM users WHERE email = ? LIMIT 1",
   [email]
 );
@@ -113,7 +109,7 @@ if (!user.is_verified) {
 
     // Redirect based on role
  if (user.role === "admin") {
-return res.redirect(withBase("/admin"));
+  return res.redirect("/www/350/medibook/admin");
 }
 
 if (user.role === "pending_practitioner") {
