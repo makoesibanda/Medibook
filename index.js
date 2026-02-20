@@ -7,10 +7,24 @@ const path = require("path");
 
 const app = express();
 
+/*
+=====================================
+BASE PATH FOR DEPLOYMENT
+=====================================
+If running locally → BASE_PATH = ""
+If deployed on Goldsmiths → BASE_PATH = "/www/350/medibook"
+*/
+const BASE_PATH = process.env.BASE_PATH || "";
+
+// Make BASE_PATH available everywhere (EJS + routes)
+app.locals.BASE_PATH = BASE_PATH;
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(express.static(path.join(__dirname, "public")));
+// Static files must also use BASE_PATH
+app.use(`${BASE_PATH}`, express.static(path.join(__dirname, "public")));
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
@@ -21,13 +35,14 @@ app.use(
   })
 );
 
-// STEP 1: Make BASE_PATH + user available in ALL EJS templates
+// Make BASE_PATH + user available in ALL EJS templates
 app.use((req, res, next) => {
-  res.locals.BASE_PATH = process.env.BASE_PATH || "";
+  res.locals.BASE_PATH = BASE_PATH;
   res.locals.user = req.session?.user || null;
   next();
 });
 
+// Database connection
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -37,13 +52,19 @@ const db = mysql.createPool({
 
 global.db = db;
 
-app.use("/", require("./routes/auth"));
-app.use("/patient", require("./routes/patient"));
-app.use("/practitioner", require("./routes/practitioner"));
-app.use("/admin", require("./routes/admin"));
+/*
+=====================================
+ROUTES (all mounted under BASE_PATH)
+=====================================
+*/
+app.use(`${BASE_PATH}/`, require("./routes/auth"));
+app.use(`${BASE_PATH}/patient`, require("./routes/patient"));
+app.use(`${BASE_PATH}/practitioner`, require("./routes/practitioner"));
+app.use(`${BASE_PATH}/admin`, require("./routes/admin"));
 
-app.get("/", (req, res) => {
-  res.render("index"); // user is already in res.locals.user now
+// Home page
+app.get(`${BASE_PATH}/`, (req, res) => {
+  res.render("index");
 });
 
 const PORT = process.env.PORT || 8001;
