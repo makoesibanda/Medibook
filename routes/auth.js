@@ -109,7 +109,7 @@ if (!user.is_verified) {
 
     // Redirect based on role
  if (user.role === "admin") {
-  return res.redirect("/admin");
+  return res.redirect("/www/350/medibook/admin");
 }
 
 if (user.role === "pending_practitioner") {
