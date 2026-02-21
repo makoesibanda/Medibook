@@ -156,13 +156,15 @@ router.get("/practitioner/register", async (req, res) => {
 });
 
 
-  } catch (err) {
-    console.error(err);
-    res.render("auth/practitioner-register", {
-      error: "Failed to load services.",
-      services: []
-    });
-  }
+} catch (err) {
+  console.error(err);
+  res.render("auth/practitioner-register", {
+    error: "Failed to load services.",
+    services: [],
+    formData: {} // ✅ this line fixes the crash
+  });
+}
+
 });
 
 
