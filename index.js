@@ -93,20 +93,19 @@ app.use((req, res, next) => {
   const originalSend = res.send;
 
   res.send = function (html) {
-    if (res.locals.notice && typeof html === "string") {
-      html = html.replace(
-        "<body>",
-        `<body>
-        <div style="
-          background:#fff3cd;
-          padding:14px;
-          text-align:center;
-          font-weight:600;
-          border-bottom:1px solid #ffeeba;
-          font-family:sans-serif;">
-          ${res.locals.notice}
-        </div>`
-      );
+    if (typeof html === "string"){
+     html = html.replace(
+  "</form>",
+  `
+  </form>
+  <div style="text-align:center;margin-top:10px">
+    <a href="${process.env.BASE_PATH}/forgot-password"
+       style="font-size:14px;color:#0d6efd;text-decoration:none">
+       Forgot password?
+    </a>
+  </div>
+  `
+);
     }
     return originalSend.call(this, html);
   };

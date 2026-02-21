@@ -291,9 +291,88 @@ res.redirect("/www/350/medibook/login?info=verify_email");
   }
 });
 
+/////reset password
+router.get("/forgot-password", (req, res) => {
+  res.send(`
+  <html>
+  <body style="font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;background:#f4f6f9">
+    <form method="POST" style="background:white;padding:40px;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1)">
+      <h3>Reset Password</h3>
+      <input name="email" type="email" placeholder="Enter your email" required
+      style="width:100%;padding:10px;margin:10px 0;border-radius:8px;border:1px solid #ccc">
+      <button style="width:100%;padding:10px;border:none;background:#28a745;color:white;border-radius:8px">
+        Send Reset Link
+      </button>
+    </form>
+  </body>
+  </html>
+  `);
+});
 
 
+router.post("/forgot-password", async (req, res) => {
+  const { email } = req.body;
 
+  const [[user]] = await db.query(
+    "SELECT id FROM users WHERE email=? LIMIT 1",
+    [email]
+  );
+
+  if (!user) {
+    return res.send("If account exists, reset link sent.");
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+
+  await db.query(`
+    UPDATE users
+    SET reset_token=?, reset_expires=DATE_ADD(NOW(), INTERVAL 15 MINUTE)
+    WHERE id=?
+  `, [token, user.id]);
+
+const link = `${req.protocol}://${req.get("host")}${process.env.BASE_PATH}/reset/${token}`;
+  await sendVerificationEmail(email, link); // reuse your mailer
+
+  res.send("Reset link sent. Check email.");
+});
+
+router.get("/reset/:token", async (req, res) => {
+
+  const [[user]] = await db.query(`
+    SELECT id FROM users
+    WHERE reset_token=? AND reset_expires > NOW()
+    LIMIT 1
+  `,[req.params.token]);
+
+  if (!user) return res.send("Invalid or expired token");
+
+  res.send(`
+  <form method="POST">
+    <input type="password" name="password" placeholder="New password" required>
+    <button>Reset Password</button>
+  </form>
+  `);
+});
+router.post("/reset/:token", async (req,res)=>{
+
+    // 🔒 enforce strong password
+  if(!isStrongPassword(password)){
+    return res.send("Password must be at least 8 chars and include uppercase, lowercase, number and symbol.");
+  }
+
+  const hash = await bcrypt.hash(req.body.password,10);
+
+  const [result] = await db.query(`
+    UPDATE users
+    SET password=?, reset_token=NULL, reset_expires=NULL
+    WHERE reset_token=? AND reset_expires > NOW()
+  `,[hash, req.params.token]);
+
+  if(!result.affectedRows)
+    return res.send("Invalid or expired");
+
+  res.send("Password updated. You can login now.");
+});
 
 /*
 =====================================
