@@ -298,8 +298,7 @@ router.get("/forgot-password", (req, res) => {
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Forgot Password</title>
-
+ 
 <style>
 body{
 margin:0;
@@ -354,8 +353,7 @@ text-decoration:none;
 
 <div class="card">
 
-<h2>Forgot Password</h2>
-
+ 
 <form method="POST">
 
 <input name="email" type="email" placeholder="Enter your email" required>
@@ -364,7 +362,7 @@ text-decoration:none;
 
 </form>
 
-<a href="/www/350/medibook/login">Back to login</a>
+<a href="/login">Back to login</a>
 
 </div>
 
@@ -501,7 +499,7 @@ a{
 </form>
 
 <div class="small">
-<a href="/www/350/medibook/login">Back to login</a>
+<a href="/login">Back to login</a>
 </div>
 
 </div>
@@ -544,7 +542,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.08);text-align:center">
 
 <p>Your password has been changed successfully.</p>
 
-<a href="/www/350/medibook/login"
+<a href="/login"
 style="display:inline-block;margin-top:15px;padding:10px 20px;
 background:#2563eb;color:white;border-radius:8px;text-decoration:none">
 Login
