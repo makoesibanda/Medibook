@@ -2,8 +2,7 @@ const nodemailer = require("nodemailer");
 
 const BASE_URL = "https://doc.gold.ac.uk/www/350/medibook";
 
-const resetLink = `${BASE_URL}/reset/${token}`;
-
+ 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -92,6 +91,8 @@ const verificationLink = `${BASE_URL}/verify?token=${token}`;
 }
 
 async function sendPasswordResetEmail(to, token){
+    const resetLink = `${BASE_URL}/reset/${token}`;
+
   const mailOptions = {
     from: `"MediBook Security" <${process.env.EMAIL_USER}>`,
     to,
