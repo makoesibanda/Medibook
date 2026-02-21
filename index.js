@@ -21,6 +21,56 @@ app.use(
   })
 );
 
+app.get("/notice/pending", (req, res) => {
+  res.send(`
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Application Pending</title>
+    <meta http-equiv="refresh" content="3;url=/www/350/medibook/patient">
+    <style>
+      body{
+        font-family:sans-serif;
+        background:#f8f9fa;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        height:100vh;
+        margin:0;
+      }
+      .card{
+        background:white;
+        padding:40px;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,0.1);
+        text-align:center;
+        max-width:420px;
+      }
+      .msg{
+        font-size:18px;
+        margin-bottom:15px;
+      }
+      .small{
+        font-size:14px;
+        color:#666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="msg">
+        Your practitioner application is under review.
+      </div>
+      <div class="small">
+        You can continue using your account as a patient.<br>
+        You will be notified once approved.
+      </div>
+    </div>
+  </body>
+  </html>
+  `);
+});
+
 // STEP 1: Make BASE_PATH + user available in ALL EJS templates
 app.use((req, res, next) => {
   res.locals.BASE_PATH = process.env.BASE_PATH || "";

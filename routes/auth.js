@@ -111,12 +111,8 @@ if (!user.is_verified) {
  if (user.role === "admin") {
   return res.redirect("/www/350/medibook/admin");
 }
-
 if (user.role === "pending_practitioner") {
-  req.session.notice =
-    "Your practitioner application is under review. You can continue using your account as a patient until approved.";
-    
-  return res.redirect("/www/350/medibook/patient");
+  return res.redirect("/notice/pending");
 }
 
 // If practitioner, allow mode selection
