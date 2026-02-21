@@ -93,7 +93,7 @@ app.use((req, res, next) => {
   const originalSend = res.send;
 
   res.send = function (html) {
-    if (typeof html === "string"){
+    if (typeof html === "string" && req.path === "/login"){
      html = html.replace(
   "</form>",
   `
