@@ -174,6 +174,7 @@ Creates pending practitioner
 */
 router.post("/practitioner/register", async (req, res) => {
 const { full_name, email, password, confirm_password, bio, service_id } = req.body;
+const safeData = { full_name, email, service_id, bio };
 
   try {
     // ALWAYS load services first
@@ -187,7 +188,7 @@ const { full_name, email, password, confirm_password, bio, service_id } = req.bo
   return res.render("auth/practitioner-register", {
     error: "All required fields must be filled.",
     services,
-    formData: { full_name, email, service_id, bio }
+formData: safeData
   });
 }
 
@@ -197,7 +198,7 @@ if (password !== confirm_password) {
   return res.render("auth/practitioner-register", {
     error: "Passwords do not match.",
     services,
-    formData: { full_name, email, service_id, bio }
+formData: safeData
   });
 }
 
@@ -207,7 +208,7 @@ if (!isStrongPassword(password)) {
   return res.render("auth/practitioner-register", {
     error: "Password must be at least 8 characters and include uppercase, lowercase, number and special character.",
     services,
-    formData: { full_name, email, service_id, bio }
+formData: safeData
   });
 }
 
@@ -236,16 +237,17 @@ if (!isStrongPassword(password)) {
 
     await sendVerificationEmail(email, token);
 
-    return res.render("auth/practitioner-register", {
-      error: "Account exists but not verified. Verification email resent.",
-      services
-    });
+   return res.render("auth/practitioner-register", {
+  error: "Account exists but not verified. Verification email resent.",
+  services,
+  formData: safeData
+});
   }
 
   return res.render("auth/practitioner-register", {
   error: "Email already exists.",
   services,
-  formData: { full_name, email, service_id, bio }
+formData: safeData
 });
 
 }
@@ -282,10 +284,11 @@ res.redirect("/www/350/medibook/login?info=verify_email");
     `);
 
 
-    res.render("auth/practitioner-register", {
-      error: "Registration failed.",
-      services
-    });
+   res.render("auth/practitioner-register", {
+  error: "Registration failed.",
+  services,
+  formData: safeData
+});
   }
 });
 
