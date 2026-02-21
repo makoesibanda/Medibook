@@ -88,7 +88,53 @@ async function sendVerificationEmail(to, token) {
   await transporter.sendMail(mailOptions);
 }
 
+async function sendPasswordResetEmail(to, link){
+
+  const mailOptions = {
+    from: `"MediBook Security" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Reset your MediBook password",
+
+    text: `
+Reset your password:
+${link}
+
+If you didn't request this, ignore this email.
+    `,
+
+    html: `
+      <h2>Password Reset Request</h2>
+
+      <p>You requested to reset your password.</p>
+
+      <a href="${link}"
+         style="
+           display:inline-block;
+           padding:12px 20px;
+           background:#dc3545;
+           color:white;
+           text-decoration:none;
+           border-radius:6px;
+           font-weight:bold;
+         ">
+         Reset Password
+      </a>
+
+      <p style="margin-top:20px;color:#666;font-size:14px">
+        This link expires in 15 minutes.
+      </p>
+
+      <p>If you didn't request this, you can ignore this email.</p>
+
+      <p>MediBook Security Team</p>
+    `
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
 module.exports = {
   sendBookingConfirmation,
-  sendVerificationEmail
+  sendVerificationEmail,
+  sendPasswordResetEmail
 };
