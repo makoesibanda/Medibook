@@ -21,7 +21,7 @@ app.use(
   })
 );
 
-app.get("/www/350/medibook/notice/pending", (req, res) => {
+app.get("/notice/pending", (req, res) => {
   res.send(`
   <!DOCTYPE html>
   <html>

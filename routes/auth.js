@@ -112,7 +112,7 @@ if (!user.is_verified) {
   return res.redirect("/www/350/medibook/admin");
 }
 if (user.role === "pending_practitioner") {
-  return res.redirect("/notice/pending");
+return res.redirect("/www/350/medibook/notice/pending");
 }
 
 // If practitioner, allow mode selection
