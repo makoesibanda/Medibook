@@ -330,8 +330,7 @@ router.post("/forgot-password", async (req, res) => {
     WHERE id=?
   `, [token, user.id]);
 
-const link = `${req.protocol}://${req.get("host")}${process.env.BASE_PATH}/reset/${token}`;
-  const { sendPasswordResetEmail } = require("../utils/mailer");
+   const { sendPasswordResetEmail } = require("../utils/mailer");
 await sendPasswordResetEmail(email, token);// reuse your mailer
 
   res.send("Reset link sent. Check email.");
@@ -357,9 +356,11 @@ router.get("/reset/:token", async (req, res) => {
 router.post("/reset/:token", async (req,res)=>{
 
     // 🔒 enforce strong password
-  if(!isStrongPassword(password)){
-    return res.send("Password must be at least 8 chars and include uppercase, lowercase, number and symbol.");
-  }
+  const password = req.body.password;
+
+if(!isStrongPassword(password)){
+  return res.send("Password must be at least 8 chars and include uppercase, lowercase, number and symbol.");
+}
 
   const hash = await bcrypt.hash(req.body.password,10);
 
