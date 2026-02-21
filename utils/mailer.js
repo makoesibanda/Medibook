@@ -1,5 +1,9 @@
 const nodemailer = require("nodemailer");
 
+const BASE_URL = "https://doc.gold.ac.uk/www/350/medibook";
+
+const resetLink = `${BASE_URL}/reset/${token}`;
+
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
@@ -53,8 +57,7 @@ EMAIL VERIFICATION
 */
 async function sendVerificationEmail(to, token) {
 
-  const verificationLink = `${process.env.BASE_URL}/verify?token=${token}`;
-
+const verificationLink = `${BASE_URL}/verify?token=${token}`;
   const mailOptions = {
     from: `"MediBook" <${process.env.EMAIL_USER}>`,
     to,
@@ -88,8 +91,7 @@ async function sendVerificationEmail(to, token) {
   await transporter.sendMail(mailOptions);
 }
 
-async function sendPasswordResetEmail(to, link){
-
+async function sendPasswordResetEmail(to, token){
   const mailOptions = {
     from: `"MediBook Security" <${process.env.EMAIL_USER}>`,
     to,
@@ -97,8 +99,7 @@ async function sendPasswordResetEmail(to, link){
 
     text: `
 Reset your password:
-${link}
-
+${resetLink}
 If you didn't request this, ignore this email.
     `,
 
@@ -107,7 +108,7 @@ If you didn't request this, ignore this email.
 
       <p>You requested to reset your password.</p>
 
-      <a href="${link}"
+      <a href="${resetLink}"
          style="
            display:inline-block;
            padding:12px 20px;

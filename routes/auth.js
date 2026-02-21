@@ -332,7 +332,7 @@ router.post("/forgot-password", async (req, res) => {
 
 const link = `${req.protocol}://${req.get("host")}${process.env.BASE_PATH}/reset/${token}`;
   const { sendPasswordResetEmail } = require("../utils/mailer");
-await sendPasswordResetEmail(email, link);// reuse your mailer
+await sendPasswordResetEmail(email, token);// reuse your mailer
 
   res.send("Reset link sent. Check email.");
 });
