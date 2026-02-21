@@ -294,19 +294,83 @@ res.redirect("/www/350/medibook/login?info=verify_email");
 /////reset password
 router.get("/forgot-password", (req, res) => {
   res.send(`
-  <html>
-  <body style="font-family:sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;background:#f4f6f9">
-    <form method="POST" style="background:white;padding:40px;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,.1)">
-      <h3>Reset Password</h3>
-      <input name="email" type="email" placeholder="Enter your email" required
-      style="width:100%;padding:10px;margin:10px 0;border-radius:8px;border:1px solid #ccc">
-      <button style="width:100%;padding:10px;border:none;background:#28a745;color:white;border-radius:8px">
-        Send Reset Link
-      </button>
-    </form>
-  </body>
-  </html>
-  `);
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forgot Password</title>
+
+<style>
+body{
+margin:0;
+font-family:system-ui;
+background:#f1f5f9;
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:14px;
+width:90%;
+max-width:420px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+text-align:center;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:12px;
+border-radius:8px;
+border:1px solid #d1d5db;
+}
+
+button{
+width:100%;
+margin-top:18px;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#16a34a;
+color:white;
+font-weight:600;
+}
+
+a{
+display:block;
+margin-top:15px;
+font-size:14px;
+color:#2563eb;
+text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Forgot Password</h2>
+
+<form method="POST">
+
+<input name="email" type="email" placeholder="Enter your email" required>
+
+<button>Send Reset Link</button>
+
+</form>
+
+<a href="/www/350/medibook/login">Back to login</a>
+
+</div>
+
+</body>
+</html>
+`);
 });
 
 
@@ -356,17 +420,104 @@ router.get("/reset/:token", async (req, res) => {
   if (!user) return res.send("Invalid or expired token");
 
   res.send(`
-  <form method="POST">
-    <input type="password" name="password" placeholder="New password" required>
-    <button>Reset Password</button>
-  </form>
-  `);
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reset Password</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+
+.card{
+  background:white;
+  padding:30px;
+  border-radius:14px;
+  width:90%;
+  max-width:420px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  text-align:center;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:15px;
+}
+
+button{
+  width:100%;
+  margin-top:18px;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#1d4ed8;
+}
+
+.small{
+  margin-top:15px;
+  font-size:14px;
+}
+
+a{
+  color:#2563eb;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Reset Password</h2>
+
+<form method="POST">
+
+<input type="password" name="password" placeholder="New password" required>
+
+<input type="password" name="confirm" placeholder="Confirm password" required>
+
+<button>Update Password</button>
+
+</form>
+
+<div class="small">
+<a href="/www/350/medibook/login">Back to login</a>
+</div>
+
+</div>
+
+</body>
+</html>
+`);
 });
 router.post("/reset/:token", async (req,res)=>{
 
     // 🔒 enforce strong password
-  const password = req.body.password;
+const { password, confirm } = req.body;
 
+if(password !== confirm){
+  return res.send("Passwords do not match");
+}
 if(!isStrongPassword(password)){
   return res.send("Password must be at least 8 chars and include uppercase, lowercase, number and symbol.");
 }
@@ -381,7 +532,29 @@ const hash = await bcrypt.hash(password,10);
   if(!result.affectedRows)
     return res.send("Invalid or expired");
 
-  res.send("Password updated. You can login now.");
+res.send(`
+<html>
+<body style="font-family:sans-serif;background:#f1f5f9;
+display:flex;align-items:center;justify-content:center;height:100vh">
+
+<div style="background:white;padding:30px;border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);text-align:center">
+
+<h2>Password Updated</h2>
+
+<p>Your password has been changed successfully.</p>
+
+<a href="/www/350/medibook/login"
+style="display:inline-block;margin-top:15px;padding:10px 20px;
+background:#2563eb;color:white;border-radius:8px;text-decoration:none">
+Login
+</a>
+
+</div>
+
+</body>
+</html>
+`);
 });
 
 /*
