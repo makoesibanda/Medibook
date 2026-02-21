@@ -311,6 +311,8 @@ router.get("/forgot-password", (req, res) => {
 
 
 router.post("/forgot-password", async (req, res) => {
+
+  try{
   const { email } = req.body;
 
   const [[user]] = await db.query(
@@ -334,6 +336,13 @@ router.post("/forgot-password", async (req, res) => {
 await sendPasswordResetEmail(email, token);// reuse your mailer
 
   res.send("Reset link sent. Check email.");
+  }
+  catch(err){
+   console.error(err)
+   res.send("Something went wrong")
+ }
+
+  
 });
 
 router.get("/reset/:token", async (req, res) => {
@@ -362,8 +371,7 @@ if(!isStrongPassword(password)){
   return res.send("Password must be at least 8 chars and include uppercase, lowercase, number and symbol.");
 }
 
-  const hash = await bcrypt.hash(req.body.password,10);
-
+const hash = await bcrypt.hash(password,10);
   const [result] = await db.query(`
     UPDATE users
     SET password=?, reset_token=NULL, reset_expires=NULL
