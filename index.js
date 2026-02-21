@@ -27,7 +27,7 @@ app.get("/notice/pending", (req, res) => {
   <html>
   <head>
     <title>Application Pending</title>
-    <meta http-equiv="refresh" content="3;url=/www/350/medibook/patient">
+    <meta http-equiv="refresh" content="15;url=/www/350/medibook/patient">
     <style>
       body{
         font-family:sans-serif;
@@ -64,6 +64,9 @@ app.get("/notice/pending", (req, res) => {
       <div class="small">
         You can continue using your account as a patient.<br>
         You will be notified once approved.
+      </div>
+      <div class="small">
+        Please wait 15 seconds while we are redirecting you!
       </div>
     </div>
   </body>
