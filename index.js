@@ -28,6 +28,39 @@ app.use((req, res, next) => {
   next();
 });
 
+// GLOBAL FLASH NOTICE SYSTEM
+app.use((req, res, next) => {
+  res.locals.notice = req.session.notice || null;
+  delete req.session.notice;
+  next();
+});
+
+// AUTO NOTICE BANNER INJECTOR
+app.use((req, res, next) => {
+  const originalSend = res.send;
+
+  res.send = function (html) {
+    if (res.locals.notice && typeof html === "string") {
+      html = html.replace(
+        "<body>",
+        `<body>
+        <div style="
+          background:#fff3cd;
+          padding:14px;
+          text-align:center;
+          font-weight:600;
+          border-bottom:1px solid #ffeeba;
+          font-family:sans-serif;">
+          ${res.locals.notice}
+        </div>`
+      );
+    }
+    return originalSend.call(this, html);
+  };
+
+  next();
+});
+
 const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
